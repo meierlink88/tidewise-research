@@ -46,8 +46,8 @@ agents:
 
       Use load_skill("geopolitical-risk") for the geopolitical risk framework, load_skill("web-reader") for latest news and research, load_skill("global-macro") for macro transmission analysis.
       Use read_url for GPR Index data and real-time geopolitical news.
-    tools: [bash, read_file, write_file, load_skill, read_url]
-    skills: [geopolitical-risk, web-reader, global-macro]
+    tools: [bash, read_file, write_file, load_skill, read_url, mcp_agentos_query_story_events, mcp_agentos_get_story_evidence]
+    skills: [geopolitical-risk, web-reader, global-macro, agentos-story-events]
     max_iterations: 50
     timeout_seconds: 1800
     max_retries: 1
@@ -101,8 +101,8 @@ agents:
 
       Use load_skill("commodity-analysis") for commodity methods, load_skill("geopolitical-risk") for geopolitical-energy quant framing.
       Use read_url for latest EIA/IEA/OPEC data and reports.
-    tools: [bash, read_file, write_file, load_skill, read_url]
-    skills: [commodity-analysis, geopolitical-risk]
+    tools: [bash, read_file, write_file, load_skill, read_url, mcp_agentos_query_story_events, mcp_agentos_get_story_evidence]
+    skills: [commodity-analysis, geopolitical-risk, agentos-story-events]
     max_iterations: 50
     timeout_seconds: 1800
     max_retries: 1
@@ -158,8 +158,8 @@ agents:
 
       Use load_skill("geopolitical-risk") for supply-chain geopolitical frame, load_skill("sector-rotation") for rotation logic, load_skill("event-driven") for event-driven opportunities.
       Use read_url for shipping data, semi industry reports, and supply-chain research.
-    tools: [bash, read_file, write_file, load_skill, read_url]
-    skills: [geopolitical-risk, sector-rotation, event-driven]
+    tools: [bash, read_file, write_file, load_skill, read_url, mcp_agentos_query_story_events, mcp_agentos_get_story_evidence]
+    skills: [geopolitical-risk, sector-rotation, event-driven, agentos-story-events]
     max_iterations: 50
     timeout_seconds: 1800
     max_retries: 1
@@ -219,8 +219,8 @@ agents:
       5. **Risk/reward & timetable** — Risk/reward of proposals; sequencing and timing (immediate/this week/this month); estimate of max drawdown under stress
 
       Use load_skill("asset-allocation") for allocation framework, load_skill("risk-analysis") for risk budget and hedge sizing, load_skill("hedging-strategy") for instruments and execution.
-    tools: [bash, read_file, write_file, load_skill]
-    skills: [asset-allocation, risk-analysis, hedging-strategy]
+    tools: [bash, read_file, write_file, load_skill, mcp_agentos_query_story_events, mcp_agentos_get_story_evidence]
+    skills: [asset-allocation, risk-analysis, hedging-strategy, agentos-story-events]
     max_iterations: 50
     timeout_seconds: 1800
     max_retries: 1
@@ -228,22 +228,22 @@ agents:
 tasks:
   - id: task-geopolitical
     agent_id: geopolitical_analyst
-    prompt_template: 'Analyze geopolitical risk for crisis scenario "{crisis}": rate six hotspots, track GPR Index, with focus on {market}.'
+    prompt_template: 'Analyze geopolitical risk for crisis scenario "{crisis}": rate six hotspots, track GPR Index, with focus on {market}. AgentOS storyline ID: {story_id}; research date: {research_date} (Asia/Shanghai). Load agentos-story-events. When story_id is a real GPR ID, read all pages of its daily Events and associated signals with the AgentOS tools and retain Event/Signal/Evidence IDs in the report. Record which daily Events were used, not relevant to your role, or lack evidence. The chief must also query the same scope and verify key upstream references. If no real story_id/date was supplied, skip AgentOS queries and explicitly state that no internal storyline input was provided; never infer an ID or date. Preserve the original external research tools and methods.'
     depends_on: []
 
   - id: task-energy
     agent_id: energy_analyst
-    prompt_template: 'Assess energy impact of crisis "{crisis}", quantify war risk premium and oil/gas disruption odds, with focus on {market}.'
+    prompt_template: 'Assess energy impact of crisis "{crisis}", quantify war risk premium and oil/gas disruption odds, with focus on {market}. AgentOS storyline ID: {story_id}; research date: {research_date} (Asia/Shanghai). Load agentos-story-events. When story_id is a real GPR ID, read all pages of its daily Events and associated signals with the AgentOS tools and retain Event/Signal/Evidence IDs in the report. Record which daily Events were used, not relevant to your role, or lack evidence. The chief must also query the same scope and verify key upstream references. If no real story_id/date was supplied, skip AgentOS queries and explicitly state that no internal storyline input was provided; never infer an ID or date. Preserve the original external research tools and methods.'
     depends_on: []
 
   - id: task-supply-chain
     agent_id: supply_chain_analyst
-    prompt_template: 'Analyze global supply-chain impact (semis/rare earths/shipping/food) of crisis "{crisis}", identify affected industries and companies in {market}.'
+    prompt_template: 'Analyze global supply-chain impact (semis/rare earths/shipping/food) of crisis "{crisis}", identify affected industries and companies in {market}. AgentOS storyline ID: {story_id}; research date: {research_date} (Asia/Shanghai). Load agentos-story-events. When story_id is a real GPR ID, read all pages of its daily Events and associated signals with the AgentOS tools and retain Event/Signal/Evidence IDs in the report. Record which daily Events were used, not relevant to your role, or lack evidence. The chief must also query the same scope and verify key upstream references. If no real story_id/date was supplied, skip AgentOS queries and explicitly state that no internal storyline input was provided; never infer an ID or date. Preserve the original external research tools and methods.'
     depends_on: []
 
   - id: task-strategy
     agent_id: chief_strategist
-    prompt_template: 'Synthesize all three streams and craft emergency geopolitical-risk allocation and hedging for {market} under crisis "{crisis}".'
+    prompt_template: 'Synthesize all three streams and craft emergency geopolitical-risk allocation and hedging for {market} under crisis "{crisis}". AgentOS storyline ID: {story_id}; research date: {research_date} (Asia/Shanghai). Load agentos-story-events. When story_id is a real GPR ID, read all pages of its daily Events and associated signals with the AgentOS tools and retain Event/Signal/Evidence IDs in the report. Record which daily Events were used, not relevant to your role, or lack evidence. The chief must also query the same scope and verify key upstream references. If no real story_id/date was supplied, skip AgentOS queries and explicitly state that no internal storyline input was provided; never infer an ID or date. Preserve the original external research tools and methods.'
     depends_on: [task-geopolitical, task-energy, task-supply-chain]
     input_from:
       geopolitical_report: task-geopolitical
@@ -257,3 +257,9 @@ variables:
   - name: market
     description: "Focus market (e.g., A-shares, Hong Kong, global multi-asset)"
     required: true
+  - name: story_id
+    description: "Optional authoritative AgentOS GeopoliticRivalry GPR ID; no inferred identity"
+    required: false
+  - name: research_date
+    description: "Optional YYYY-MM-DD Asia/Shanghai date selecting Event created_at; required with story_id"
+    required: false

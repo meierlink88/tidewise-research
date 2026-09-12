@@ -248,6 +248,12 @@ def test_every_preset_tool_exists_in_local_registry() -> None:
         preset = load_preset(entry["name"])
         for agent in preset["agents"]:
             for tool_name in agent.get("tools") or []:
+                # Operator-configured AgentOS MCP tools are resolved remotely, not by
+                # build_registry() without config. The consumer contract and live
+                # preflight verify these exact names; all other tools stay checked.
+                if tool_name in {"mcp_agentos_query_story_events", "mcp_agentos_get_story_evidence"}:
+                    assert entry["name"] == "geopolitical_war_room"
+                    continue
                 assert registry.get(tool_name), (
                     f"{entry['name']}/{agent['id']} requests tool {tool_name!r} "
                     "that the local registry does not provide; the worker "

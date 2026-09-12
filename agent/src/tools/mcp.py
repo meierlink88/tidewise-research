@@ -640,7 +640,7 @@ class MCPServerAdapter:
         """
         try:
             result = _run_sync(lambda: self._call_tool(remote_name, arguments))
-            payload = _normalize_call_tool_result(result)
+            payload = _normalize_call_tool_result(result, compact=self.server_config.compact_structured_results)
             payload.update({
                 "server": self.server_name,
                 "remote_tool": remote_name,
@@ -1162,7 +1162,7 @@ def _is_null_schema(schema: Any) -> bool:
     return branch_type == "null" or branch_type == ["null"]
 
 
-def _normalize_call_tool_result(result: CallToolResult) -> dict[str, Any]:
+def _normalize_call_tool_result(result: CallToolResult, *, compact: bool = False) -> dict[str, Any]:
     """Convert a FastMCP call result into the local JSON payload shape.
 
     Args:
@@ -1198,7 +1198,28 @@ def _normalize_call_tool_result(result: CallToolResult) -> dict[str, Any]:
         text = _extract_text_content(result.content)
         if text:
             payload["text"] = text
+    if compact and "data" in payload and "structured_content" in payload:
+        # Opt-in for JSON-only data services. Preserve non-duplicate text/media;
+        # only remove aliases that contain the exact same JSON value.
+        if payload["data"] == payload["structured_content"]:
+            payload.pop("structured_content")
+            blocks = payload.get("content", [])
+            duplicate_text = bool(blocks) and all(
+                isinstance(block, dict) and block.get("type") == "text"
+                and _json_text_equals(block.get("text", ""), payload["data"])
+                for block in blocks
+            )
+            if duplicate_text:
+                payload.pop("content", None)
+                payload.pop("text", None)
     return payload
+
+
+def _json_text_equals(text: str, value: Any) -> bool:
+    try:
+        return json.loads(text) == value
+    except (TypeError, ValueError):
+        return False
 
 
 def _select_result_data(result: CallToolResult, structured: dict[str, Any]) -> Any:
