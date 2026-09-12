@@ -22,3 +22,5 @@ and MCP deployment configuration; no persisted AgentOS data is modified by these
 Set `compact_structured_results: true` for AgentOS. The MCP adapter then removes only exact duplicate
 JSON aliases (data/structured_content/text blocks), retaining distinct text and media. Default false preserves
 all existing servers. Without it a small Event page can exceed the Worker 10,000-character cap through duplication.
+
+AgentOS Event/Evidence tool results now receive a 30,000-character budget in both the main Agent and Swarm Worker. Exact names only; all other tools retain 10,000. Provider default limit=100 fits whole Events within 28,000 characters and returns a continuation when necessary; no one-Event cap.

@@ -153,3 +153,15 @@ def test_result_under_limit_passes_through_unchanged(monkeypatch, tmp_path):
     content = _run(monkeypatch, tmp_path, _tool_call_then_final(), small_result)
 
     assert content == small_result
+
+
+def test_agentos_14k_result_reaches_worker_model_unchanged(monkeypatch, tmp_path):
+    result = '{"events": "' + ("事" * 14_000) + '"}'
+    llm = _ScriptedChatLLM([
+        LLMResponse(tool_calls=[ToolCallRequest(
+            id="call_story", name="mcp_agentos_query_story_events", arguments={})]),
+        LLMResponse(content=FINAL_TEXT),
+    ])
+    content = _run(monkeypatch, tmp_path, llm, result)
+    assert content == result
+    assert "[TRUNCATED:" not in content

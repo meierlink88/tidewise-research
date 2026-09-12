@@ -9,7 +9,7 @@ Use only the real `story_id` and `research_date` supplied in the task. Without b
 never guess an identity/date or replace the scope with a keyword search. "New" means graph Event `created_at`
 on that Asia/Shanghai calendar date, not occurrence time, article publication or late storyline association.
 
-1. Call `mcp_agentos_query_story_events(story_id, research_date, limit=1)`.
+1. Call `mcp_agentos_query_story_events(story_id, research_date, limit=100)`.
 2. Review each Event's title, summary, semantic fields and time, and its `variable_signals`.
 3. Pass `next_after_event_id` as `after_event_id` until null. Deduplicate Event/Signal IDs across pages.
    Keep the received unique IDs and query timestamps. `total` is live and can change; report mismatch or restart
@@ -40,4 +40,4 @@ on that Asia/Shanghai calendar date, not occurrence time, article publication or
 
 If a tool is absent, denied or fails, explicitly report the integration failure; external research can continue,
 but do not claim the AgentOS input was reviewed. Do not send internal URLs or credentials through read_url.
-Use small pages; if a result is truncated, do not mark its unseen content as reviewed.
+The server returns as many complete Events and associated Signals as fit its 28,000-character budget, up to limit=100 by default. These two AgentOS tools have a 30,000-character consumer budget; other tools retain their original limits. If next_after_event_id is null and the unique Event count matches total, this page covers all current Events. Otherwise continue paging. If a result is truncated, do not mark its unseen content as reviewed.

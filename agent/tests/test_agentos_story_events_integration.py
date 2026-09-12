@@ -54,3 +54,15 @@ def test_compact_mcp_json_keeps_data_and_preserves_distinct_content():
     compact = _normalize_call_tool_result(result, compact=True)
     assert "Additional warning" in compact["text"]
     assert len(compact["content"]) == 2
+
+
+def test_only_agentos_tools_receive_larger_result_budget():
+    from src.config.limits import tool_result_limit, truncate_tool_result
+
+    text = "事" * 14_000
+    for name in ("mcp_agentos_query_story_events", "mcp_agentos_get_story_evidence"):
+        assert tool_result_limit(name) == 30_000
+        assert truncate_tool_result(text, limit=tool_result_limit(name)) == text
+    for name in ("read_url", "bash", "mcp_other_query_story_events", "unknown"):
+        assert tool_result_limit(name) == 10_000
+        assert "[TRUNCATED:" in truncate_tool_result(text, limit=tool_result_limit(name))
