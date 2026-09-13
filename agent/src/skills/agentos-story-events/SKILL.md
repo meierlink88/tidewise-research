@@ -1,43 +1,48 @@
 ---
 name: agentos-story-events
-description: Read a supplied AgentOS geopolitical storyline's newly created daily Events, associated variable signals and supporting Evidence via MCP. Supplements existing research sources.
+description: Query AgentOS daily storyline Events and variable signals when the original research needs news or event context. Supplements existing sources without changing the research method or report structure.
 category: tool
 ---
 # AgentOS Storyline Events
 
-Use only the real `story_id` and `research_date` supplied in the task. Without both, report missing input;
-never guess an identity/date or replace the scope with a keyword search. "New" means graph Event `created_at`
+## Purpose
+
+Use AgentOS Events and associated variable signals as additional input wherever the original research
+method calls for news or event information. Combine relevant information with existing external research
+and make your own analytical judgment. Preserve the original role responsibilities and report structure.
+Do not add an AgentOS verification section, Event/Signal inventory, evidence-quality assessment,
+or a separate chief verification step. Incorporate useful information naturally into the existing analysis;
+use the original report's citation conventions when citing a source.
+
+## Query
+
+Use only the real `story_id` and `research_date` supplied in the task. If either is missing, continue
+original research without AgentOS; never guess an identity/date. "New" means graph Event `created_at`
 on that Asia/Shanghai calendar date, not occurrence time, article publication or late storyline association.
 
-1. Call `mcp_agentos_query_story_events(story_id, research_date, limit=100)`.
-2. Review each Event's title, summary, semantic fields and time, and its `variable_signals`.
-3. Pass `next_after_event_id` as `after_event_id` until null. Deduplicate Event/Signal IDs across pages.
-   Keep the received unique IDs and query timestamps. `total` is live and can change; report mismatch or restart
-   the scan rather than claiming complete coverage. This is not a frozen snapshot.
-4. For a key fact, contradiction or missing supporting detail, call
-   `mcp_agentos_get_story_evidence(story_id, research_date, event_id, evidence_id)` using returned IDs.
-   Evidence is atomic semantic source material, not necessarily a complete news article.
-5. Continue existing external news, quantitative data and calculation tools normally. Internal data is an
-   additional source, not a replacement for independent research. Record external sources separately.
+1. When news or event context is needed, call
+   `mcp_agentos_query_story_events(story_id, research_date, limit=100)`.
+2. Read the Event titles, summaries, semantic fields and times, together with their `variable_signals`.
+   Use relevant information in the original analysis; no separate review deliverable is required.
+3. If `next_after_event_id` is non-null, pass it as `after_event_id` until null to finish this query.
+   Deduplicate Event/Signal IDs across pages. This is a live query, not a frozen snapshot.
+4. If the research needs further source detail, optionally call
+   `mcp_agentos_get_story_evidence(story_id, research_date, event_id, evidence_id)` with returned IDs.
+   Evidence is source material, not necessarily a complete news article.
+5. Continue existing external news, quantitative data and calculation tools normally.
 
-## Evidence discipline
+## Data meaning and availability
 
-- Event = reported occurrence/plan/expectation with explicit modality. Signal = previously analyzed Variable
-  change on a named anchor, not a new research conclusion and not automatically bullish/bearish for a stock.
-- Preserve variable and anchor identities, source Event IDs, invalidation and timing. Do not rewrite a Signal
-  into a stronger fact, silently re-anchor it or count duplicate reports as independent confirmations.
-- `usable_as_complete_fact=false` means a signal depends on Events outside this day/story scope; do not use
-  its complete assertion or expand history. Record the missing IDs as a gap.
-- Missing signals are not evidence of no impact. Missing provenance or unfinished publication is a data gap.
-- Old tool results may be cleared by the worker. Keep a compact reference ledger in your working files and
-  re-query key supporting Evidence before finalizing. Do not rely on remembered numeric values.
-- Include a daily Event review ledger in report.md: Event ID, used / not relevant / evidence gap, reason,
-  and related Signal/Evidence IDs. Unsupported causal transmission remains a hypothesis.
-- Chief: inspect this same scope, compare upstream references, and re-read Evidence for key conclusions.
-  Do not assume upstream report text is identical to original observations.
-
-## Errors
-
-If a tool is absent, denied or fails, explicitly report the integration failure; external research can continue,
-but do not claim the AgentOS input was reviewed. Do not send internal URLs or credentials through read_url.
-The server returns as many complete Events and associated Signals as fit its 28,000-character budget, up to limit=100 by default. These two AgentOS tools have a 30,000-character consumer budget; other tools retain their original limits. If next_after_event_id is null and the unique Event count matches total, this page covers all current Events. Otherwise continue paging. If a result is truncated, do not mark its unseen content as reviewed.
+- Events describe reported occurrences, plans or expectations; retain that distinction.
+- Signals describe previously analyzed changes to a named variable on a named anchor. They can inform
+  further reasoning; they do not automatically determine a stock's bullish/bearish direction.
+- Preserve the meaning, timing and target of the supplied data when using it. A signal marked
+  `usable_as_complete_fact=false` has incomplete source coverage in this query; its full assertion is unavailable.
+  Do not expand the query into historical Events or invent missing information.
+- Old tool results may be cleared by the worker. Keep useful working notes or re-query when the analysis
+  needs the original details again. No separate reference ledger is required.
+- If a tool fails, continue available research without pretending the unavailable data was obtained.
+  Do not send internal URLs or credentials through read_url.
+- The provider fits complete Events and associated Signals within 28,000 characters, up to limit=100.
+  These two AgentOS tools have a 30,000-character consumer budget; other tools retain their original limits.
+  A null cursor with the unique Event count matching total means this query has returned all current Events.

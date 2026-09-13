@@ -11,11 +11,13 @@ Pass native `user_vars`: crisis, market, story_id (real GPR ID), research_date (
 The two new variables are optional for backwards-compatible standalone research; with a storyline both
 must be supplied by the caller. No data package, snapshot, scheduler or execution-layer replacement.
 Verify all four workers actually register both tools before a coupled run; the registry otherwise warns
-and drops unavailable remote tools. Keep the original tools/skills/DAG. New Skill explains pagination,
-source closure, evidence checks, live consistency and per-Event review ledger.
+and drops unavailable remote tools. Keep the original tools/skills/DAG. New Skill explains how to query daily Events and associated signals when the original research needs
+news/event context, including pagination and data meaning. Preserve the original report structure; no
+AgentOS verification chapter, evidence-quality assessment, per-Event ledger or mandatory chief re-query.
 
 Test provider first, then consumer allowlists/schema/variable rendering, then a real four-role run.
-Record calls/results, per-role unique Event coverage and evidence use, report references and errors.
+Integration diagnostics may record calls/results, delivered Event/Signal counts and tool errors outside
+the research report. These diagnostics are not an additional analyst task or report section.
 Task completion alone is not business validity. Rollback removes the appended Skill/tool/input entries
 and MCP deployment configuration; no persisted AgentOS data is modified by these tools.
 
