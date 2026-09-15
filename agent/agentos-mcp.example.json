@@ -1,0 +1,14 @@
+{
+  "mcp_servers": {
+    "agentos": {
+      "type": "streamableHttp",
+      "url": "https://AGENTOS_HOST/mcp",
+      "enabled_tools": [
+        "query_story_events",
+        "get_story_evidence"
+      ],
+      "tool_timeout": 60,
+      "compact_structured_results": true
+    }
+  }
+}

@@ -50,7 +50,7 @@ from src.providers.content_filter import (
 from src.config.accessor import get_env_config
 from src.config.paths import get_runs_dir, get_sessions_dir
 from src.tools.background_tools import get_background_manager
-from src.config.limits import truncate_tool_result
+from src.config.limits import tool_result_limit, truncate_tool_result
 from src.tools.path_utils import safe_run_dir
 from src.tools.redaction import redact_payload, redact_tool_result
 
@@ -2864,7 +2864,7 @@ class AgentLoop:
                     self._called_identical[cache_key] = result
 
         status = "ok" if success else "error"
-        truncated = truncate_tool_result(result)
+        truncated = truncate_tool_result(result, limit=tool_result_limit(tc.name))
         messages.append(context.format_tool_result(tc.id, tc.name, truncated))
 
         # One redaction feeds every subscriber below: the persisted trace

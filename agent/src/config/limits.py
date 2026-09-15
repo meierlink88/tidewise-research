@@ -12,6 +12,18 @@ from __future__ import annotations
 #: Maximum characters of a single tool result handed back to the model.
 TOOL_RESULT_LIMIT = 10_000
 
+# Exact tool names: unrelated MCP servers and local tools retain the default.
+_TOOL_RESULT_LIMITS = {
+    "mcp_agentos_query_story_events": 30_000,
+    "mcp_agentos_get_story_evidence": 30_000,
+}
+
+
+def tool_result_limit(tool_name: str) -> int:
+    """Return the model-input character budget for this exact tool."""
+    return _TOOL_RESULT_LIMITS.get(tool_name, TOOL_RESULT_LIMIT)
+
+
 _TRUNCATION_NOTICE = (
     "\n\n[TRUNCATED: {shown} of {total} characters delivered. The remainder was "
     "not sent. Do not treat this as the complete result — narrow the request, "
