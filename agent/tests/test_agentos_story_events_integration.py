@@ -8,7 +8,7 @@ from src.tools import _prune_agent_config_for_swarm_tools
 
 def test_all_four_roles_receive_story_scope_and_keep_original_dag():
     run = build_run_from_preset("geopolitical_war_room", {
-        "crisis": "美伊军事冲突", "market": "A股市场", "story_id": "GPRtest", "research_date": "2026-09-12"})
+        "crisis": "美伊军事冲突", "market": "A股市场", "story_id": "GPRtest", "research_date": "", "event_window_start": "2026-09-11T15:00:00Z", "event_window_end": "2026-09-12T15:00:00Z"})
     names = {"mcp_agentos_query_story_events", "mcp_agentos_get_story_evidence"}
     for agent in run.agents:
         assert names <= set(agent.tools)
@@ -18,7 +18,9 @@ def test_all_four_roles_receive_story_scope_and_keep_original_dag():
             assert "read_url" in agent.tools
     for task in run.tasks:
         prompt = task.prompt_template.format_map(run.user_vars)
-        assert "GPRtest" in prompt and "2026-09-12" in prompt
+        assert "GPRtest" in prompt
+        assert "2026-09-11T15:00:00Z" in prompt and "2026-09-12T15:00:00Z" in prompt
+        assert "mcp_agentos_query_story_events" in prompt
         assert "agentos-story-events" in prompt
     assert all(not t.depends_on for t in run.tasks[:3])
     chief = run.tasks[-1]

@@ -2113,3 +2113,7 @@ MIT License — see [LICENSE](LICENSE)
 <p align="center">
   <img src="https://visitor-badge.laobi.icu/badge?page_id=HKUDS.Vibe-Trading&style=flat" alt="visitors"/>
 </p>
+
+### AgentOS storyline research input
+
+For `geopolitical_war_room`, pass the storyline name as `crisis`, its real `story_id`, and timezone-aware `event_window_start` / `event_window_end` in `user_vars`. The team retrieves Events and associated variable signals through configured AgentOS MCP tools. See [connection and scope contract](docs/agentos-storyline-mcp.md). Legacy `research_date` selects a Shanghai calendar day and must not be mixed with an explicit window.

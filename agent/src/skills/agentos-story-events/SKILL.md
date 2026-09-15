@@ -1,6 +1,6 @@
 ---
 name: agentos-story-events
-description: Query AgentOS daily storyline Events and variable signals when the original research needs news or event context. Supplements existing sources without changing the research method or report structure.
+description: Query AgentOS storyline Events within a supplied time window and variable signals when the original research needs news or event context. Supplements existing sources without changing the research method or report structure.
 category: tool
 ---
 # AgentOS Storyline Events
@@ -16,18 +16,27 @@ use the original report's citation conventions when citing a source.
 
 ## Query
 
-Use only the real `story_id` and `research_date` supplied in the task. If either is missing, continue
-original research without AgentOS; never guess an identity/date. "New" means graph Event `created_at`
-on that Asia/Shanghai calendar date, not occurrence time, article publication or late storyline association.
+Use only the real `story_id` and time scope supplied in the task. Prefer the exact
+`event_window_start` and `event_window_end` pair (ISO-8601 timestamps with timezone).
+They select graph Event `created_at` in [start, end), not occurrence time, article
+publication or late storyline association. Do not substitute today or a calendar day.
+A partial window is invalid: do not fall back to research_date. Only when neither
+window value is supplied may an explicit `research_date` select a Shanghai calendar day.
+If identity or scope is missing, continue original research without AgentOS; never guess.
+Missing-variable text such as "determine the appropriate ..." is not a supplied value.
 
-1. When news or event context is needed, call
-   `mcp_agentos_query_story_events(story_id, research_date, limit=100)`.
+1. For the supplied storyline task, obtain its event context with
+   `mcp_agentos_query_story_events(story_id=story_id,
+   event_window_start=event_window_start, event_window_end=event_window_end, limit=100)`.
+   Omit `research_date` in window mode. In legacy day mode only, call with
+   `story_id`, `research_date` and `limit=100`, omitting both window arguments.
 2. Read the Event titles, summaries, semantic fields and times, together with their `variable_signals`.
    Use relevant information in the original analysis; no separate review deliverable is required.
-3. If `next_after_event_id` is non-null, pass it as `after_event_id` until null to finish this query.
+3. If `next_after_event_id` is non-null, pass it as `after_event_id` with the identical story/time scope until null to finish this query.
    Deduplicate Event/Signal IDs across pages. This is a live query, not a frozen snapshot.
 4. If the research needs further source detail, optionally call
-   `mcp_agentos_get_story_evidence(story_id, research_date, event_id, evidence_id)` with returned IDs.
+   `mcp_agentos_get_story_evidence` with returned `event_id` and `evidence_id`,
+   the same `story_id` and exactly the same time scope arguments as the Event query.
    Evidence is source material, not necessarily a complete news article.
 5. Continue existing external news, quantitative data and calculation tools normally.
 

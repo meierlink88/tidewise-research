@@ -7,9 +7,13 @@ Never commit credentials. Provider must expose `query_story_events` and `get_sto
 Use the exact server key `agentos` to match preset tool names. Existing MCP transport supports
 Streamable HTTP, SSE and stdio. Production uses the existing AgentOS endpoint and auth.
 
-Pass native `user_vars`: crisis, market, story_id (real GPR ID), research_date (YYYY-MM-DD Shanghai).
-The two new variables are optional for backwards-compatible standalone research; with a storyline both
-must be supplied by the caller. No data package, snapshot, scheduler or execution-layer replacement.
+Pass native `user_vars`: `crisis` (storyline name only), `market`, real GPR `story_id`,
+`event_window_start` and `event_window_end` (timezone-aware ISO timestamps, [start,end)),
+and `agentos_workflow_run_id` for tracing. Leave `research_date` empty in window mode.
+Do not embed Event/Signal bodies in crisis: research workers obtain them using MCP.
+Legacy callers may supply a Shanghai `research_date` instead of both window values.
+These are live queries, not frozen Event/Signal snapshots; keep scope identical across pages.
+Do not change the original team roles, DAG, research method or report format.
 Verify all four workers actually register both tools before a coupled run; the registry otherwise warns
 and drops unavailable remote tools. Keep the original tools/skills/DAG. New Skill explains how to query daily Events and associated signals when the original research needs
 news/event context, including pagination and data meaning. Preserve the original report structure; no
